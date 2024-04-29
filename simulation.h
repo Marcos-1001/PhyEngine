@@ -5,13 +5,14 @@
 
 #include "particles.h"
 #include "grid.h"
+#include "shader.h"
 #include <vector>
 #include <memory>
 #include <iostream>
 #include <omp.h>
 
 
-vector<shared_ptr<Particle>> list_of_particles;
+std::vector<Particle> list_of_particles;
 
 float vstrength = .08f;
 

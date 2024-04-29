@@ -17,23 +17,23 @@ struct Particle {
 
     float mass = 1.0f;  
     float density = {};
-    glm::vec3 force_pressure = {};
+    glm::vec3 force = {};
 
     
     Particle() = default;
     Particle(glm::vec3 pos) : position(pos) {}
     Particle(glm::vec3 pos, glm::vec3 vel) : position(pos), velocity(vel) {}
 
-    void update(float& dt); 
+    void update(const float& dt); 
     
     void calculate_density(std::vector<Particle>& Particle);    
     void calculate_fpressure(std::vector<Particle>& Particle);  
     void calculate_viscosity(std::vector<Particle>& Particle);  
 };
 float inline calculate_pressure(Particle& p, float k, float rest_density);
-float inline density_kernel(Particle& p1, Particle& p2, float r);
-glm::vec3 inline pressure_kernel(Particle& p1, Particle& p2, float r);
-glm::vec3 inline viscosity_kernel(Particle& p1, Particle& p2, float r);
+float inline density_kernel( float r);
+float inline pressure_kernel( float r);
+float inline viscosity_kernel( float r);
 
 
 

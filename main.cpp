@@ -99,7 +99,7 @@ int main(){
     
     
     int n = 100;
-    init_simulation(n);
+    initialization_simulation(n);
 
 
     
@@ -112,53 +112,53 @@ int main(){
 
         glfwPollEvents();
         processInput(window,camera, 0.001f);
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplGlfw_NewFrame();
+        // ImGui::NewFrame();
 
-        ImGui::Begin("Edit variables");
-        ImGui::SliderFloat("Radius",&radius,0.0f,1.5f);
-        ImGui::SliderFloat("rest_density",&rest_density,1000.0f,5000.0f);
-        ImGui::SliderFloat("K",&k_,0.0f,1.5f);
-        ImGui::SliderFloat("vstrength",&vstrength,0.0f,1.0f);
+        // ImGui::Begin("Edit variables");
+        // ImGui::SliderFloat("Radius",&radius,0.0f,1.5f);
+        // ImGui::SliderFloat("rest_density",&rest_density,1000.0f,5000.0f);
+        // ImGui::SliderFloat("K",&k_,0.0f,1.5f);
+        // ImGui::SliderFloat("vstrength",&vstrength,0.0f,1.0f);
         
-        ImGui::SliderFloat("Gravity",&gravity_constant,-10.0f,10.0f);
-        ImGui::SliderFloat("min_x",&min_x,-10.0f,10.0f);
-        ImGui::SliderFloat("max_x",&max_x,-10.0f,10.0f);
-        ImGui::SliderFloat("min_y",&min_y,-10.0f,10.0f);
-        ImGui::SliderFloat("max_y",&max_y,-10.0f,10.0f);
-        ImGui::SliderFloat("min_z",&min_z,-10.0f,10.0f);
-        ImGui::SliderFloat("max_z",&max_z,-10.0f,10.0f);
+        // ImGui::SliderFloat("Gravity",&gravity_constant,-10.0f,10.0f);
+        // ImGui::SliderFloat("min_x",&min_x,-10.0f,10.0f);
+        // ImGui::SliderFloat("max_x",&max_x,-10.0f,10.0f);
+        // ImGui::SliderFloat("min_y",&min_y,-10.0f,10.0f);
+        // ImGui::SliderFloat("max_y",&max_y,-10.0f,10.0f);
+        // ImGui::SliderFloat("min_z",&min_z,-10.0f,10.0f);
+        // ImGui::SliderFloat("max_z",&max_z,-10.0f,10.0f);
 
         //Calculate bounds volume
         //float volume = (max_x-min_x)*(max_y-min_y)*(max_z-min_z);
 
         //rest_density = 1000.f; 
 
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,ImGui::GetIO().Framerate);
+        // ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,ImGui::GetIO().Framerate);
 
 
-        ImGui::Button("Add a particle");
-        if(ImGui::IsItemClicked()){
-            shared_ptr<Particle> p = make_shared<Particle>(glm::vec3((min_x+max_x)/2.,max_y,(min_z+max_z)/2.) , 
-                                                                glm::vec3(0,0,0),
-                                                                glm::vec3(0,0,0));
-            list_of_particles.push_back(p);
-            insert(p);
-        }
-        ImGui::Button("Add 10 Particle");
-        if(ImGui::IsItemClicked()){
-            for(int i = 0 ; i< 10; i++){
-                shared_ptr<Particle> p = make_shared<Particle>(glm::vec3((min_x+max_x)/2.,max_y,(min_z+max_z)/2.) , 
-                                                                glm::vec3(0,0,0),
-                                                                glm::vec3(0,0,0));
-                list_of_particles.push_back(p);
-                insert(p);
-            }
+        // ImGui::Button("Add a particle");
+        // if(ImGui::IsItemClicked()){
+        //     shared_ptr<Particle> p = make_shared<Particle>(glm::vec3((min_x+max_x)/2.,max_y,(min_z+max_z)/2.) , 
+        //                                                         glm::vec3(0,0,0),
+        //                                                         glm::vec3(0,0,0));
+        //     list_of_particles.push_back(p);
+        //     insert(p);
+        // }
+        // ImGui::Button("Add 10 Particle");
+        // if(ImGui::IsItemClicked()){
+        //     for(int i = 0 ; i< 10; i++){
+        //         shared_ptr<Particle> p = make_shared<Particle>(glm::vec3((min_x+max_x)/2.,max_y,(min_z+max_z)/2.) , 
+        //                                                         glm::vec3(0,0,0),
+        //                                                         glm::vec3(0,0,0));
+        //         list_of_particles.push_back(p);
+        //         insert(p);
+        //     }
             
-        }
+        // }
 
-        ImGui::End();
+        // ImGui::End();
         
 
 
