@@ -25,6 +25,16 @@ float inline pressure_kernel( float r) {
         return 0;
     }
 }
+float inline viscosity_kernel(float r){
+    const float h_f =  r/PARTICLE_RADIUS;
+    if (h_f >= 0 && h_f <= 1) {
+        return 20.0f / (3.0f * M_PI * pow(PARTICLE_RADIUS, 3)) * (1.0f - h_f);
+    }
+    else {
+        return 0;
+    }
+
+}
 
 float inline calculate_pressure(Particle& p) {
     return STIFFNESS_CONSTANT * (pow(p.density / REST_DENSITY, 7) - 1);
@@ -32,14 +42,16 @@ float inline calculate_pressure(Particle& p) {
 
 
 
-void Particle::calculate_density(std::vector<Particle>& Particle) {
+void Particle::calculate_density(std::vector<Particle*>& Particle) {
     this->density = 0; 
     for (auto& p : Particle) {
-        float r = glm::distance(position, p.position);                        
-        this->density += density_kernel( r) * p.mass;
+        float r = glm::distance(position, p->position);                        
+        if(this == p) continue; 
+        
+        this->density += density_kernel( r) * p->mass;
     }    
 }
-void Particle::calculate_fpressure(std::vector<Particle>& Particle) {
+void Particle::calculate_fpressure(std::vector<Particle*>& Particle) {
     this->force = glm::vec3(0.0f, 0.0f, 0.0f);
     
     float this_particle_characteristic = calculate_pressure(*this) / (this->density * this->density); 
@@ -47,28 +59,29 @@ void Particle::calculate_fpressure(std::vector<Particle>& Particle) {
     float symm_formula = 0;
 
     for (auto& p : Particle) {
-        float r = glm::distance(position, p.position);
+        float r = glm::distance(position, p->position);
+        if(this == p) continue; 
         
-        symm_formula = this_particle_characteristic  +  calculate_pressure(p) / (p.density * p.density);
-        glm::vec3 dir = p.position - position;
-        this->force +=  dir * pressure_kernel( r) * p.mass * symm_formula * (-1.0f);
+        symm_formula = this_particle_characteristic  +  calculate_pressure(*p) / (p->density * p->density);
+        glm::vec3 dir = p->position - position;
+        this->force +=  dir * pressure_kernel( r) * p->mass * symm_formula * (-1.0f);
     }
 
 }
-void Particle::calculate_viscosity(std::vector<Particle>& Particle) {
+void Particle::calculate_viscosity(std::vector<Particle*>& Particle) {
     glm::vec3 force_viscosity = glm::vec3(0.0f, 0.0f, 0.0f);
     
     for (auto& p : Particle) {
-        float r = glm::distance(position, p.position);
+        float r = glm::distance(position, p->position);
+        if(this == p) continue; 
 
-        force_viscosity += viscosity_kernel( r) * p.mass / p.density;
+        force_viscosity += viscosity_kernel( r) * p->mass / p->density;
     }
     this->force += force_viscosity;
 }
 
 
-
-void Particle::update(const float& dt) {
+void Particle::update(Shader& sh, const float& dt) {
     // Update position
     acceleration = force / mass;
     velocity += acceleration;
@@ -98,5 +111,8 @@ void Particle::update(const float& dt) {
         position.z = 10.0f;
         velocity.z  *= -.8f; // bounce + damping
     }
+
+    esfera.centro = position;
+    esfera.display(sh);    
 }
 

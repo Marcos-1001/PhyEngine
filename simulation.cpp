@@ -1,7 +1,7 @@
 #include "simulation.h"
 
 
-void initialization_simulation(int n){
+void initialization_simulation(std::vector<Particle*>& list_of_particles,int n){
     list_of_particles.clear();
     list_of_particles.reserve(n);
     float dim = pow(n, 1/3.0f); 
@@ -9,39 +9,43 @@ void initialization_simulation(int n){
     for(int i = 0; i < dim; i++){
         for(int j = 0; j < dim; j++){
             for(int k = 0; k < dim; k++){
-                shared_ptr<Particle> p = make_shared<Particle>(glm::vec3(i+2,j+2,k+2));
+                Particle* p = new Particle(glm::vec3(i+.5,j+.5,k+.5));
                 list_of_particles.push_back(p);
-                insert(p);
+                //insert(p);
             }
         }
         
     }
 }
 
-void simulating( float dt, Shader ourShader){
-    #pragma omp parallel for
+void simulating(std::vector<Particle*>& list_of_particles, float dt, Shader ourShader){
+    //#pragma omp parallel for
     for(int i = 0; i < list_of_particles.size(); i++){
         list_of_particles[i]->calculate_density(list_of_particles);
     }
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int i = 0; i < list_of_particles.size(); i++){
         list_of_particles[i]->calculate_fpressure(list_of_particles);
     }
-    #pragma omp parallel for
+    // #pragma omp parallel for
+    // for(int i = 0; i < list_of_particles.size(); i++){
+    //     list_of_particles[i]->calculate_viscosity(list_of_particles);
+    // }
+    //#pragma omp parallel for
     for(int i = 0; i < list_of_particles.size(); i++){
-        list_of_particles[i]->calculate_viscosity(list_of_particles);
+        list_of_particles[i]->update(ourShader, dt);
     }
-    #pragma omp parallel for
-    for(int i = 0; i < list_of_particles.size(); i++){
-        list_of_particles[i]->update(dt);
-    }
-    #pragma omp parallel for
-    for(int i = 0; i < list_of_particles.size(); i++){
-        erase(list_of_particles[i]);
-        list_of_particles[i]->update(0.0000001);
-        insert(list_of_particles[i]);
-    }
-    for(int i = 0; i < list_of_particles.size(); i++){
-        list_of_particles[i]->draw(ourShader);
+    // #pragma omp parallel for
+    // for(int i = 0; i < list_of_particles.size(); i++){
+    //     erase(list_of_particles[i]);
+    //     list_of_particles[i]->update(0.0000001);
+    //     insert(list_of_particles[i]);
+    // }
+    
+}
+
+void finish_simulation(std::vector<Particle*>& list_of_particles){
+    for(auto p : list_of_particles){
+        delete p;
     }
 }

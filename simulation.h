@@ -12,13 +12,11 @@
 #include <omp.h>
 
 
-std::vector<Particle> list_of_particles;
-
-float vstrength = .08f;
 
 
-void initialization_simulation(int n);
-void simulating( float dt, Shader ourShader);
+void initialization_simulation(std::vector<Particle*>& list_of_particles,int n);
+void simulating(std::vector<Particle*>& list_of_particles, float dt, Shader ourShader);
+void finish_simulation(std::vector<Particle*>& list_of_particles);
 void simulation_gui(); 
 
 

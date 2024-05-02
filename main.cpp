@@ -5,7 +5,6 @@
 #include "GLFW/glfw3.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "particles.h"
 #include "camera.h"
 #include "manage.h"
 #include "shader.h"
@@ -24,14 +23,6 @@
 
 using namespace std;
 
-const int SCR_WIDTH = 1200;
-const int SCR_HEIGHT = 1200;
-
-
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 
 
@@ -40,6 +31,17 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 
 int main(){
+
+
+    const int SCR_WIDTH = 1200;
+    const int SCR_HEIGHT = 1200;
+
+
+    float lastX = SCR_WIDTH / 2.0f;
+    float lastY = SCR_HEIGHT / 2.0f;
+    bool firstMouse = true;
+    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    std::vector<Particle*> list_of_particles;
 
      // glfw: initialize and configure
     // ------------------------------
@@ -69,17 +71,17 @@ int main(){
     glEnable(GL_DEPTH_TEST);
     
     // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    // IMGUI_CHECKVERSION();
+    // ImGui::CreateContext();
+    // ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-    // Setup Platform/Renderer backends
-    ImGui::StyleColorsDark();
+    // // Setup Platform/Renderer backends
+    // ImGui::StyleColorsDark();
 
-    ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
-    ImGui_ImplOpenGL3_Init("#version 330 core");
-    //ImGui SIZE
-    ImGui::GetStyle().ScaleAllSizes(2.0f);
+    // ImGui_ImplGlfw_InitForOpenGL(window, true);          // Second param install_callback=true will install GLFW callbacks and chain to existing ones.
+    // ImGui_ImplOpenGL3_Init("#version 330 core");
+    // //ImGui SIZE
+    // ImGui::GetStyle().ScaleAllSizes(2.0f);
     
 
     Shader ourShader("VertexShaders/lighting.vs","FragmentShaders/lighting.fs");
@@ -98,8 +100,8 @@ int main(){
     srand(time(NULL));
     
     
-    int n = 100;
-    initialization_simulation(n);
+    int n = 1000;
+    initialization_simulation(list_of_particles,n);
 
 
     
@@ -161,7 +163,6 @@ int main(){
         // ImGui::End();
         
 
-
         glClearColor(0.2f,0.3f,0.3f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         
@@ -173,13 +174,12 @@ int main(){
         ourShader.setMat4("model",model);
 
 
-        simulating(0.0001f,ourShader);
-        
+        simulating(list_of_particles,0.0001f,ourShader);
         
 
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // ImGui::Render();
+        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 
 
@@ -189,10 +189,10 @@ int main(){
 
         
     }
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
+    // ImGui_ImplOpenGL3_Shutdown();
+    // ImGui_ImplGlfw_Shutdown();
+    // ImGui::DestroyContext();
+    finish_simulation(list_of_particles);
         
     glfwTerminate();
 
