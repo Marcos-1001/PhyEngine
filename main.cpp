@@ -42,6 +42,7 @@ int main(){
     bool firstMouse = true;
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     std::vector<Particle*> list_of_particles;
+    SpatialHashing grid(0.8, 0.8,0.8);
 
      // glfw: initialize and configure
     // ------------------------------
@@ -96,14 +97,16 @@ int main(){
     ourShader.setMat4("projection",projection);
     
     ourShader.setVec3("lightColor",glm::vec3(1.0f,1.0f,1.0f));
-    ourShader.setVec3("lightPos",glm::vec3(5,0.0f,5));    
     srand(time(NULL));
     
     
-    int n = 1000;
-    initialization_simulation(list_of_particles,n);
-
-
+    int n = 3000;
+    initialization_simulation(list_of_particles, grid, n);
+    
+    
+    //Esfera obj(glm::vec3(0,0,0),.05f,100,100);
+    //obj.setup();
+    //glm::vec3 move=  glm::vec3(1.0f,0.0f,0.0f);
     
     cout<<list_of_particles.size()<<endl;
 
@@ -114,72 +117,31 @@ int main(){
 
         glfwPollEvents();
         processInput(window,camera, 0.001f);
-        // ImGui_ImplOpenGL3_NewFrame();
-        // ImGui_ImplGlfw_NewFrame();
-        // ImGui::NewFrame();
-
-        // ImGui::Begin("Edit variables");
-        // ImGui::SliderFloat("Radius",&radius,0.0f,1.5f);
-        // ImGui::SliderFloat("rest_density",&rest_density,1000.0f,5000.0f);
-        // ImGui::SliderFloat("K",&k_,0.0f,1.5f);
-        // ImGui::SliderFloat("vstrength",&vstrength,0.0f,1.0f);
         
-        // ImGui::SliderFloat("Gravity",&gravity_constant,-10.0f,10.0f);
-        // ImGui::SliderFloat("min_x",&min_x,-10.0f,10.0f);
-        // ImGui::SliderFloat("max_x",&max_x,-10.0f,10.0f);
-        // ImGui::SliderFloat("min_y",&min_y,-10.0f,10.0f);
-        // ImGui::SliderFloat("max_y",&max_y,-10.0f,10.0f);
-        // ImGui::SliderFloat("min_z",&min_z,-10.0f,10.0f);
-        // ImGui::SliderFloat("max_z",&max_z,-10.0f,10.0f);
-
-        //Calculate bounds volume
-        //float volume = (max_x-min_x)*(max_y-min_y)*(max_z-min_z);
-
-        //rest_density = 1000.f; 
-
-        // ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,ImGui::GetIO().Framerate);
-
-
-        // ImGui::Button("Add a particle");
-        // if(ImGui::IsItemClicked()){
-        //     shared_ptr<Particle> p = make_shared<Particle>(glm::vec3((min_x+max_x)/2.,max_y,(min_z+max_z)/2.) , 
-        //                                                         glm::vec3(0,0,0),
-        //                                                         glm::vec3(0,0,0));
-        //     list_of_particles.push_back(p);
-        //     insert(p);
-        // }
-        // ImGui::Button("Add 10 Particle");
-        // if(ImGui::IsItemClicked()){
-        //     for(int i = 0 ; i< 10; i++){
-        //         shared_ptr<Particle> p = make_shared<Particle>(glm::vec3((min_x+max_x)/2.,max_y,(min_z+max_z)/2.) , 
-        //                                                         glm::vec3(0,0,0),
-        //                                                         glm::vec3(0,0,0));
-        //         list_of_particles.push_back(p);
-        //         insert(p);
-        //     }
-            
-        // }
-
-        // ImGui::End();
         
 
         glClearColor(0.2f,0.3f,0.3f,1.0f);
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
         
         glm::mat4 view = camera.GetViewMatrix();
-
-        ourShader.setVec3("lightPos",glm::vec3(-5,0.0f,-5));
+        ourShader.setVec3("lightPos", camera.Position);
         ourShader.setMat4("view",view);
         glm::mat4 model = glm::mat4(1.0f);
         ourShader.setMat4("model",model);
-
-
-        simulating(list_of_particles,0.0001f,ourShader);
         
+        /*obj.centro += move*0.01f; 
+        if (obj.centro.x > 10.0f) {
+            obj.centro.x = 10.0f;
+            move *= -1.0f;
+        }
+        if (obj.centro.x < -10.0f) {
+            obj.centro.x = -10.0f;
+            move *= -1.0f;
+        }
+        obj.display(ourShader);
+        std::cout<<camera.Position.x<<" "<<camera.Position.y<<" "<<camera.Position.z<<std::endl;*/
+        simulating(list_of_particles,grid,0.0001f,ourShader);
 
-
-        // ImGui::Render();
-        // ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 
 
@@ -189,11 +151,8 @@ int main(){
 
         
     }
-    // ImGui_ImplOpenGL3_Shutdown();
-    // ImGui_ImplGlfw_Shutdown();
-    // ImGui::DestroyContext();
+    // Cleanup   
     finish_simulation(list_of_particles);
-        
     glfwTerminate();
 
 

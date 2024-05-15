@@ -7,16 +7,18 @@
 #include <vector>
 #include <memory>
 #include "Objeto.h"
+#include <algorithm>
 
 
-#define STIFFNESS_CONSTANT 0.1f
+#define STIFFNESS_CONSTANT 0.8f
 #define REST_DENSITY 1000.0f
-#define PARTICLE_RADIUS 0.1f
-
+#define PARTICLE_RADIUS 0.3f
+#define BOX_SIZE 1.0f
+#define VISCOSITY_CONSTANT 0.0005f
 struct Particle {
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);    
-    glm::vec3 acceleration = glm::vec3(0.0f, -9.81f, 0.0f);    
+    glm::vec3 acceleration = glm::vec3(0.0f, 0.0f, 0.0f);    
     Esfera esfera; 
     float mass = 1.0f;  
     float density = {};
@@ -26,16 +28,16 @@ struct Particle {
     Particle() = default;
     Particle(glm::vec3 pos) : position(pos) {
         esfera.centro = pos;
-        esfera.radius = 1.f;
-        esfera.slices = 10;
-        esfera.stacks = 10;
+        esfera.radius = .2f;
+        esfera.slices = 100;
+        esfera.stacks = 100;
         esfera.setup();
     }
     Particle(glm::vec3 pos, glm::vec3 vel) : position(pos), velocity(vel) {
         esfera.centro = pos;
-        esfera.radius = 1.f;
-        esfera.slices = 10;
-        esfera.stacks = 10;
+        esfera.radius = .2f;
+        esfera.slices = 100;
+        esfera.stacks = 100;
         esfera.setup();
     }
 
@@ -47,6 +49,7 @@ struct Particle {
     
 
 };
+glm::vec3 inline random_direction();
 float inline calculate_pressure(Particle& p, float k, float rest_density);
 float inline density_kernel( float r);
 float inline pressure_kernel( float r);

@@ -43,7 +43,7 @@ public:
     }
     Esfera(glm::vec3 _centro, float _radius, int _slices, int _stacks)
     {
-        escala = 1.;
+        escala = .5;
         centro = _centro;
         radius = _radius;
         slices = _slices;
@@ -125,12 +125,9 @@ public:
         model = scale(model, glm::vec3(escala));
 
         sh.setMat4("model", model);
-        if (visible)
-        {
-            glBindVertexArray(vao);
-            glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0);
-            glBindVertexArray(0);
-        }
+        glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
     }
 
     ~Esfera() = default;

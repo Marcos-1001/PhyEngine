@@ -3,8 +3,7 @@
 
 
 
-#include "particles.h"
-#include "grid.h"
+#include "spatial_hashing.h"
 #include "shader.h"
 #include <vector>
 #include <memory>
@@ -14,8 +13,8 @@
 
 
 
-void initialization_simulation(std::vector<Particle*>& list_of_particles,int n);
-void simulating(std::vector<Particle*>& list_of_particles, float dt, Shader ourShader);
+void initialization_simulation(std::vector<Particle*>& list_of_particles, SpatialHashing& grid,int n);
+void simulating(std::vector<Particle*>& list_of_particles, SpatialHashing& grid,float dt, Shader ourShader);
 void finish_simulation(std::vector<Particle*>& list_of_particles);
 void simulation_gui(); 
 
