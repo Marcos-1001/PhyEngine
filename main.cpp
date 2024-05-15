@@ -42,7 +42,7 @@ int main(){
     bool firstMouse = true;
     Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
     std::vector<Particle*> list_of_particles;
-    SpatialHashing grid(0.8, 0.8,0.8);
+    SpatialHashing grid(BOX_SIZE/4.f, BOX_SIZE/4.f,BOX_SIZE/4.f);
 
      // glfw: initialize and configure
     // ------------------------------
@@ -100,7 +100,7 @@ int main(){
     srand(time(NULL));
     
     
-    int n = 3000;
+    int n = 5000;
     initialization_simulation(list_of_particles, grid, n);
     
     

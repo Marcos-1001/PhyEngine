@@ -2,9 +2,9 @@
 #define ALPHA_CONSTANT 4.0f / (M_PI * pow(PARTICLE_RADIUS, 3));
 glm::vec3 inline random_direction() {
     return glm::vec3(
-        static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
-        static_cast <float> (rand()) / static_cast <float> (RAND_MAX),
-        static_cast <float> (rand()) / static_cast <float> (RAND_MAX)
+        static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * (rand() % 2 == 0 ? 1 : -1),
+        static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * (rand() % 2 == 0 ? 1 : -1),
+        static_cast <float> (rand()) / static_cast <float> (RAND_MAX) * (rand() % 2 == 0 ? 1 : -1)
     );
 }
 float inline density_kernel( float r) {
@@ -22,7 +22,7 @@ float inline density_kernel( float r) {
     }
 }
 float inline pressure_kernel( float r) {
-    const float h_f =  r/PARTICLE_RADIUS;
+   /* const float h_f =  r/PARTICLE_RADIUS;
     const float t1 = 1.f - h_f;//(1.0f - h_f,0 >0) ? 1.0f - h_f : 0.0f ;
     const float t2 = 2.f - h_f;//(2.0f - h_f,0 > 0) ? 2.0f - h_f : 0.0f;
     if (h_f >= 0 && h_f <= 1) {
@@ -34,9 +34,12 @@ float inline pressure_kernel( float r) {
     else {
         return 0;
     }
+    */
+    const double coef = -45./(M_PI*powf(PARTICLE_RADIUS,6));
+    return coef * powf(PARTICLE_RADIUS - r,2);
 }
 float inline viscosity_kernel(float r){
-    const float h_f =  r/PARTICLE_RADIUS;
+    /*const float h_f =  r/PARTICLE_RADIUS;
     const float t1 = 1.f - h_f;//(1.0f - h_f,0 >0) ? 1.0f - h_f : 0.0f ;
     const float t2 = 2.f - h_f;//(2.0f - h_f,0 > 0) ? 2.0f - h_f : 0.0f;
     if (h_f >= 0 && h_f <= 1) {
@@ -47,7 +50,10 @@ float inline viscosity_kernel(float r){
     }
     else {
         return 0;
-    }
+    }*/
+
+    const double coef =     45. / (M_PI*powf(PARTICLE_RADIUS,6));
+    return  coef* (PARTICLE_RADIUS-r);
     /*if (h_f >= 0 && h_f <= 1) {
         return 20.0f / (3.0f * M_PI * pow(PARTICLE_RADIUS, 3)) * (1.0f - h_f);
     }
@@ -97,7 +103,7 @@ void Particle::calculate_fpressure(std::vector<Particle*>& Particle) {
         }
         
         symm_formula = this_particle_characteristic  +  calculate_pressure(*p) / (p->density * p->density);
-        glm::vec3 dir = (r == 0.0f ) ? random_direction() :   glm::normalize(p->position - position);
+        glm::vec3 dir = (r == 0.0f ) ? random_direction() :   glm::normalize(position- p->position );
         this->force +=  dir * pressure_kernel( r) * p->mass * symm_formula * (-1.0f);
     }
 
@@ -109,11 +115,13 @@ void Particle::calculate_viscosity(std::vector<Particle*>& Particle) {
     for (auto& p : Particle) {
         float r = glm::distance(position, p->position);
         if(this == p || r > PARTICLE_RADIUS) continue; 
-        glm::vec3 diff_vel =  this->velocity -p->velocity;
+        /*glm::vec3 diff_vel =  this->velocity -p->velocity;
         glm::vec3 diff_pos =  this->position - p->position;
         float magnitude = glm::length(diff_pos)*glm::length(diff_pos);
-        glm::vec3 dir = (r == 0.0f ) ? random_direction() :   glm::normalize(this->position - p->position);
-        force_viscosity +=  dir * viscosity_kernel( r) * p->mass / p->density * dot(diff_vel , diff_pos) /(magnitude + 0.01f*PARTICLE_RADIUS*PARTICLE_RADIUS); ;
+        glm::vec3 dir = (r == 0.0f ) ? random_direction() :   glm::normalize(this->position - p->position);*/
+        
+        //force_viscosity +=  dir * viscosity_kernel( r) * p->mass / p->density * dot(diff_vel , diff_pos) /(magnitude + 0.01f*PARTICLE_RADIUS*PARTICLE_RADIUS); ;
+        force_viscosity = (p->velocity - this->velocity) / (2.f*p->density) * viscosity_kernel(r) * p->mass;
     }
     this->force += force_viscosity*VISCOSITY_CONSTANT;
 }
@@ -121,7 +129,7 @@ void Particle::calculate_viscosity(std::vector<Particle*>& Particle) {
 
 void Particle::update(Shader& sh, const float& dt) {
     // Update position
-    acceleration = force / mass + glm::vec3(0.0f, -9.8f, 0.0f);
+    acceleration = force / mass + glm::vec3(0.0f, -9.81f, 0.0f);
     velocity += acceleration;
     position += velocity * dt;
 

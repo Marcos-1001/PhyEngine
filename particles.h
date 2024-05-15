@@ -10,11 +10,11 @@
 #include <algorithm>
 
 
-#define STIFFNESS_CONSTANT 0.8f
+#define STIFFNESS_CONSTANT 0.5f
 #define REST_DENSITY 1000.0f
-#define PARTICLE_RADIUS 0.3f
-#define BOX_SIZE 1.0f
-#define VISCOSITY_CONSTANT 0.0005f
+#define PARTICLE_RADIUS .6f
+#define BOX_SIZE 2.f
+#define VISCOSITY_CONSTANT 0.1f
 struct Particle {
     glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
     glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);    
