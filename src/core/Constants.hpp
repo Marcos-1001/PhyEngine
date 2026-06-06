@@ -1,0 +1,8 @@
+#ifndef CONSTANTS_HPP
+#define CONSTANTS_HPP
+
+#define PI 3.14159265358979323846f
+#define GRAVITY 9.81f
+
+
+#endif // CONSTANTS_HPP

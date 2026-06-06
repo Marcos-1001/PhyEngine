@@ -1,0 +1,26 @@
+GLAD — loader de OpenGL (vendored en extern/glad/)
+==================================================
+
+Este proyecto carga las funciones de OpenGL con GLAD (versión clásica GLAD1,
+API gladLoadGLLoader). Sustituye a GLEW.
+
+Generado para OpenGL 3.3 core con:
+
+    python3 -m venv /tmp/gladenv
+    /tmp/gladenv/bin/pip install 'glad<2'
+    /tmp/gladenv/bin/glad --generator c --spec gl --api gl=3.3 --profile core \
+        --out-path extern/glad
+
+Archivos resultantes (versionados en el repo):
+    extern/glad/include/glad/glad.h
+    extern/glad/include/KHR/khrplatform.h
+    extern/glad/src/glad.c          <- CMake lo compila como la librería 'glad'
+
+Uso en código:
+    #include <glad/glad.h>          // siempre ANTES que <GLFW/glfw3.h>
+    gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);   // tras crear el contexto
+
+¿Necesitas más OpenGL (p.ej. compute shaders, 4.3+)? Regenera con --api gl=4.6
+y sube GLFW_CONTEXT_VERSION_MAJOR/MINOR en src/app/main.cpp.
+
+Generador web equivalente: https://glad.dav1d.de/

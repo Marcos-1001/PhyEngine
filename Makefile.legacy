@@ -1,0 +1,13 @@
+all: build main
+	./main
+	@echo "Run complete"
+
+
+build: *.cpp
+	@echo "Building main.cpp"
+	g++ -pthread -o main *.cpp  -lglfw -lGLEW -lGLU -lGL -lXrandr  -lXi -lXinerama -lX11 -lrt -ldl 
+	@echo "Build complete"
+clean:
+	@echo "Cleaning up"
+	rm -f main
+	@echo "Clean complete"
