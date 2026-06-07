@@ -1,7 +1,7 @@
 #include "render/Shader.hpp"
 #include "render/GlRenderer.hpp"
 #include "sim/ParticleSystem.hpp"
-
+#include "sim/SphSolver.hpp" 
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Input.hpp"
@@ -44,18 +44,26 @@ int main()
               << "  |  GPU: " << glGetString(GL_RENDERER) << '\n';
 
 
-    int numParticles = 10;
+    int numParticles = 30;
+    const float spacing = 8.0f;   // d: separación inicial (DEBE ser < h=16 para que haya vecinos)
+    const float pmass   = 64.0f;  // = restDensity · d²  → densidad en reposo ≈ restDensity
     std::vector<Particle2D> particles(numParticles*numParticles);
     for(int i = 0; i < numParticles; ++i) {
         for(int j = 0; j < numParticles; ++j) {
-            particles[i*numParticles + j] = Particle2D(Vec2(0.0f + i*40.0f, 20.0f + j*40.0f), 
-            Vec2(0.0f, 0.0f), 
-            Vec3(0.0f, 0.0f, 1.0f), 1.0f);
+            particles[i*numParticles + j] = Particle2D(
+                Vec2(350.0f + i*spacing, 350.0f + j*spacing),
+                Vec2(0.0f, 0.0f),
+                Vec3(0.0f, 0.0f, 1.0f), pmass);
         }
     }
 
     ParticleSystem2D particleSystem(particles);
-    
+    SphSolver solver(
+        1.0f,   // restDensity: DEBE coincidir con la densidad que el kernel produce en reposo (≈ mass·Σpoly6)
+        2000.0f, // gasConstant: knob de tuning para ajustar la compresibilidad del fluido
+        0.1f,   // viscosity: knob de tuning para ajustar la viscosidad del fluido
+        16.0f   // smoothingLength (h): DEBE ser > spacing para que haya vecinos; también afecta la estabilidad y el rendimiento
+    );
     
     Shader  mshader("assets/shaders/particle.vert", "assets/shaders/particle.frag");
     
@@ -103,9 +111,23 @@ int main()
         processInput(window);
 
         renderer->clear(glm::vec3(0.1f, 0.1f, 0.1f));
-        particleSystem.step(0.016f); // Simula un paso de 16 ms (aprox. 60 FPS)
+        
+        // SPH es rígido: un dt grande explota. Varios subpasos pequeños por frame.
+        // dt y substeps son knobs de estabilidad: si explota, baja dt o sube substeps.
+        const float dt = 0.004f;
+        const int substeps = 4;
+        for (int s = 0; s < substeps; ++s)
+        {
+            solver.computeDensityPressure(particleSystem);
+            solver.computeForces(particleSystem, dt);
+            particleSystem.step(dt);
+        }
+        
+        
         particles = particleSystem.getParticles();
         
+
+
         for (size_t i = 0; i < particles.size(); ++i)
         {
             positions[i] = particles[i].position;

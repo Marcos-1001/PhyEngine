@@ -56,12 +56,12 @@ Lo que existe hoy y lo que está roto. Se arregla en M0 (render) y M3 (física):
 - 🎓 Aprendes: integración numérica, manejo de fronteras, loop con `dt` fijo.
 
 ## 🪜 Milestone 3 — 💧 SPH de verdad (TU OBJETIVO)
-- [ ] `Kernels`: poly6, spiky∇, visc∇² (escalar) — con tests.
-- [ ] `SphSolver`: **densidad → presión → fuerzas → integrar**.
-- [ ] Reset de densidad cada paso + auto-contribución.
-- [ ] Color por densidad o velocidad (ver el campo).
-- [ ] **Test:** densidad de un bloque en reposo ≈ `rest_density`; fuerzas simétricas (3ª ley de Newton).
-- [ ] **✅ Resultado: agua 2D que se mueve, salpica y se asienta.**
+- [x] `Kernels` 2D: poly6, spiky∇, visc∇² (con guard `r→0`). *(falta el "con tests" — ver casilla Test abajo)*
+- [x] `SphSolver`: **densidad → presión → fuerzas → integrar**.
+- [x] Reset de densidad cada paso + auto-contribución.
+- [ ] Color por densidad o velocidad (ver el campo). *(pendiente: hoy todas azules)*
+- [ ] **Test:** densidad de un bloque en reposo ≈ `rest_density`; fuerzas simétricas (3ª ley de Newton). *(⏳ diferido junto al test de M2)*
+- [x] **✅ Resultado: agua 2D que se mueve y se asienta.** *(estable y verificado; zona segura de parámetros en [`docs/02-sph-tuning.md`](docs/02-sph-tuning.md))*
 - 🎓 Aprendes: el corazón de SPH (Müller 2003). Ver [`docs/01-sph-theory.md`](docs/01-sph-theory.md).
 
 ## 🪜 Milestone 4 — Que escale: neighbor search con grid

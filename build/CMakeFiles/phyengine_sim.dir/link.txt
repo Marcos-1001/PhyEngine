@@ -1,0 +1,2 @@
+/usr/bin/ar qc libphyengine_sim.a CMakeFiles/phyengine_sim.dir/src/sim/Kernels.cpp.o CMakeFiles/phyengine_sim.dir/src/sim/ParticleSystem.cpp.o CMakeFiles/phyengine_sim.dir/src/sim/Particles.cpp.o CMakeFiles/phyengine_sim.dir/src/sim/SphSolver.cpp.o
+/usr/bin/ranlib libphyengine_sim.a

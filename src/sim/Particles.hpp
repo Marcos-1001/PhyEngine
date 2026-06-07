@@ -11,7 +11,9 @@ struct Particle2D
     Vec2 velocity;        
     Vec3 color;     
     Scalar mass;
-
+    Scalar density; // Densidad local, calculada por el solver SPH
+    Scalar pressure; // Presión local, calculada por el solver SPH
+    
     Particle2D();
     Particle2D(Vec2 position, Vec2 velocity, Vec3 color, Scalar mass);    
     ~Particle2D();
