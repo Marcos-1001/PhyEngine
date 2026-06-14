@@ -35,3 +35,5 @@
 .claude/
 .vscode/
 build/
+extern/
+Bibliography/
