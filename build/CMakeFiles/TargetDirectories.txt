@@ -1,0 +1,13 @@
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/glad.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/phyengine_sim.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/PhyEngine.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test_freefall.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test_neighbors.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test_density.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test_stability.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test_bounce.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test_config.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test_gravity.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/test.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/edit_cache.dir
+/home/marcos/Escritorio/CG/PhyEngine/build/CMakeFiles/rebuild_cache.dir
