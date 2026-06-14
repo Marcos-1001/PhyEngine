@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/test_gravity.dir/tests/test_gravity.cpp.o -o test_gravity  libphyengine_sim.a 

@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/debug_bounce.dir/tests/debug_bounce.cpp.o -o debug_bounce  libphyengine_sim.a 

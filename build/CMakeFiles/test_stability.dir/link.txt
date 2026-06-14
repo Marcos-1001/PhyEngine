@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/test_stability.dir/tests/test_stability.cpp.o -o test_stability  libphyengine_sim.a 
