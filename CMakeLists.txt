@@ -15,6 +15,7 @@ endif()
 # que las librerías están instaladas y se encuentran".
 find_package(OpenGL REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
+find_package(OpenMP REQUIRED)
 
 # GLM: usa el del sistema si está; si no (p.ej. un colaborador que no lo tiene),
 # lo descarga solo. Es header-only, así que sale barato.
@@ -59,6 +60,7 @@ target_link_libraries(PhyEngine PRIVATE
   glad
   glfw
   glm::glm
+  OpenMP::OpenMP_CXX
   ${CMAKE_DL_LIBS})
 
 # Ruta absoluta a /assets accesible desde el código (para cargar shaders sin
@@ -72,3 +74,27 @@ enable_testing()
 add_executable(test_freefall "${CMAKE_SOURCE_DIR}/tests/test_freefall.cpp")
 target_link_libraries(test_freefall PRIVATE phyengine_sim)
 add_test(NAME freefall COMMAND test_freefall)
+
+add_executable(test_neighbors "${CMAKE_SOURCE_DIR}/tests/test_neighbors.cpp")
+target_link_libraries(test_neighbors PRIVATE phyengine_sim)
+add_test(NAME neighbors COMMAND test_neighbors)
+
+add_executable(test_density "${CMAKE_SOURCE_DIR}/tests/test_density.cpp")
+target_link_libraries(test_density PRIVATE phyengine_sim)
+add_test(NAME density COMMAND test_density)
+
+add_executable(test_stability "${CMAKE_SOURCE_DIR}/tests/test_stability.cpp")
+target_link_libraries(test_stability PRIVATE phyengine_sim)
+add_test(NAME stability COMMAND test_stability)
+
+add_executable(test_bounce "${CMAKE_SOURCE_DIR}/tests/test_bounce.cpp")
+target_link_libraries(test_bounce PRIVATE phyengine_sim)
+add_test(NAME bounce COMMAND test_bounce)
+
+add_executable(test_config "${CMAKE_SOURCE_DIR}/tests/test_config.cpp")
+target_link_libraries(test_config PRIVATE phyengine_sim)
+add_test(NAME config COMMAND test_config)
+
+add_executable(test_gravity "${CMAKE_SOURCE_DIR}/tests/test_gravity.cpp")
+target_link_libraries(test_gravity PRIVATE phyengine_sim)
+add_test(NAME gravity COMMAND test_gravity)

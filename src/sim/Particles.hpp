@@ -5,6 +5,7 @@
 #include "core/Math.hpp"
 #include "core/Constants.hpp"
 
+
 struct Particle2D
 {
     Vec2 position;

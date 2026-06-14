@@ -1,7 +1,8 @@
 #include "render/Shader.hpp"
 #include "render/GlRenderer.hpp"
 #include "sim/ParticleSystem.hpp"
-#include "sim/SphSolver.hpp" 
+#include "sim/SphSolver.hpp"
+#include "sim/SimConfig.hpp"
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Input.hpp"
@@ -9,8 +10,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-int main()
+int main(int argc, char** argv)
 {
+    // Parámetros: desde el archivo pasado por argumento, o "sim.conf" por defecto.
+    // Si no existe, loadConfig avisa y usa los defaults (set estable).
+    const std::string configPath = (argc > 1) ? argv[1] : "sim.conf";
+    SimConfig cfg = loadConfig(configPath);
+    std::cout << "[config] " << cfg.numParticles << "x" << cfg.numParticles
+              << " partículas, dt=" << cfg.dt << " substeps=" << cfg.substeps
+              << " g=" << cfg.gravity << " sigma=" << cfg.surfaceTension << '\n';
+
     if (!glfwInit())
     {
         std::cerr << "Error: glfwInit() falló\n";
@@ -43,41 +52,33 @@ int main()
     std::cout << "OpenGL " << glGetString(GL_VERSION)
               << "  |  GPU: " << glGetString(GL_RENDERER) << '\n';
 
-
-    int numParticles = 30;
-    const float spacing = 8.0f;   // d: separación inicial (DEBE ser < h=16 para que haya vecinos)
-    const float pmass   = 64.0f;  // = restDensity · d²  → densidad en reposo ≈ restDensity
-    std::vector<Particle2D> particles(numParticles*numParticles);
-    for(int i = 0; i < numParticles; ++i) {
-        for(int j = 0; j < numParticles; ++j) {
-            particles[i*numParticles + j] = Particle2D(
-                Vec2(350.0f + i*spacing, 350.0f + j*spacing),
+    // Bloque inicial de numParticles² partículas (parámetros desde el config).
+    const int   N = cfg.numParticles;
+    std::vector<Particle2D> particles(N * N);
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            particles[i * N + j] = Particle2D(
+                Vec2(cfg.originX + i * cfg.spacing, cfg.originY + j * cfg.spacing),
                 Vec2(0.0f, 0.0f),
-                Vec3(0.0f, 0.0f, 1.0f), pmass);
+                Vec3(0.0f, 0.0f, 1.0f), cfg.mass);
         }
     }
 
-    ParticleSystem2D particleSystem(particles);
-    SphSolver solver(
-        1.0f,   // restDensity: DEBE coincidir con la densidad que el kernel produce en reposo (≈ mass·Σpoly6)
-        2000.0f, // gasConstant: knob de tuning para ajustar la compresibilidad del fluido
-        0.1f,   // viscosity: knob de tuning para ajustar la viscosidad del fluido
-        16.0f   // smoothingLength (h): DEBE ser > spacing para que haya vecinos; también afecta la estabilidad y el rendimiento
-    );
-    
-    Shader  mshader("assets/shaders/particle.vert", "assets/shaders/particle.frag");
-    
+    Domain2D domain(Vec2(cfg.domainMinX, cfg.domainMinY),
+                    Vec2(cfg.domainMaxX, cfg.domainMaxY),
+                    cfg.restitution);
+    ParticleSystem2D particleSystem(particles, domain, cfg.gravity);
+    SphSolver solver(cfg.restDensity, cfg.gasConstant, cfg.viscosity,
+                     cfg.smoothingLength, cfg.surfaceTension);
 
-    
+    Shader  mshader("assets/shaders/particle.vert", "assets/shaders/particle.frag");
+
     unsigned int VBO_POS, VBO_COLOR, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO_POS);
     glGenBuffers(1, &VBO_COLOR);
 
-
     glBindVertexArray(VAO);
-
-
 
     // position attribute
     glBindBuffer(GL_ARRAY_BUFFER, VBO_POS);
@@ -93,60 +94,47 @@ int main()
 
     glEnable(GL_PROGRAM_POINT_SIZE); // Permite setear el tamaño de los puntos desde el shader
     glBindVertexArray(0); // Unbind VAO
-    
 
     IRenderer* renderer = new GlRenderer(mshader);
-
-
 
     std::vector<glm::vec2> positions(particles.size());
     std::vector<glm::vec3> colors(particles.size());
 
-
-    glm::mat4 view = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, -1.0f, 1.0f);
-    const float colorChangeSpeed = 0.001f;
+    // Proyección ortográfica = la caja del dominio (mapea unidades de sim → pantalla).
+    glm::mat4 view = glm::ortho(cfg.domainMinX, cfg.domainMaxX,
+                                cfg.domainMinY, cfg.domainMaxY, -1.0f, 1.0f);
 
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
 
         renderer->clear(glm::vec3(0.1f, 0.1f, 0.1f));
-        
-        // SPH es rígido: un dt grande explota. Varios subpasos pequeños por frame.
-        // dt y substeps son knobs de estabilidad: si explota, baja dt o sube substeps.
-        const float dt = 0.004f;
-        const int substeps = 4;
-        for (int s = 0; s < substeps; ++s)
-        {
-            solver.computeDensityPressure(particleSystem);
-            solver.computeForces(particleSystem, dt);
-            particleSystem.step(dt);
-        }
-        
-        
-        particles = particleSystem.getParticles();
-        
 
+        // SPH es rígido: un dt grande explota. Varios subpasos pequeños por frame.
+        for (int s = 0; s < cfg.substeps; ++s)
+        {
+            solver.step(particleSystem, cfg.dt);
+        }
+
+        particles = particleSystem.getParticles();
 
         for (size_t i = 0; i < particles.size(); ++i)
         {
             positions[i] = particles[i].position;
             colors[i] = particles[i].color;
         }
-        renderer->drawParticles(positions, 
-                                colors, 
-                                30.0f, 
-                                view, 
-                                VBO_POS, 
+        renderer->drawParticles(positions,
+                                colors,
+                                cfg.pointSize,
+                                view,
+                                VBO_POS,
                                 VBO_COLOR,
                                 VAO
                             );
 
-        
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO_POS);

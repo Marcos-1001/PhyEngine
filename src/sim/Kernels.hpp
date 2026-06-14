@@ -6,6 +6,9 @@
 
 // 2D (los que usa el SphSolver)
 Scalar poly6Kernel2D(Scalar r, Scalar h);
+Vec2   poly6GradientKernel2D(Scalar r, Scalar h, const Vec2& dir);
+Scalar poly6LaplacianKernel2D(Scalar r, Scalar h);
+
 Vec2   spikyKernel2D(Scalar r, Scalar h, const Vec2& dir);
 Scalar viscosityKernel2D(Scalar r, Scalar h);
 

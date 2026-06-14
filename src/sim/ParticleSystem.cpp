@@ -9,6 +9,13 @@ ParticleSystem2D::ParticleSystem2D(const std::vector<Particle2D>& particles)
     this->particles = particles;
 }
 
+ParticleSystem2D::ParticleSystem2D(const std::vector<Particle2D>& particles, const Domain2D& domain, Scalar gravity)
+{
+    this->particles = particles;
+    this->domain = domain;
+    this->gravity = gravity;
+}
+
 ParticleSystem2D::~ParticleSystem2D()
 {
 }
@@ -19,7 +26,7 @@ void ParticleSystem2D::step(float dt)
     for (auto& particle : particles)
     {
         
-        particle.velocity += Vec2(0.0f, -GRAVITY) * dt; // Gravedad
+        particle.velocity += Vec2(0.0f, -gravity) * dt; // Gravedad
         particle.position += particle.velocity * dt; // Actualizar posición
         domain.resolveCollision(particle);
     }
@@ -29,7 +36,7 @@ void ParticleSystem2D::step_nodomain(float dt)
 {
     for (auto& particle : particles)
     {   
-        particle.velocity += Vec2(0.0f, -GRAVITY) * dt; // Gravedad
+        particle.velocity += Vec2(0.0f, -gravity) * dt; // Gravedad
         particle.position += particle.velocity * dt; // Actualizar posición
     }
 }

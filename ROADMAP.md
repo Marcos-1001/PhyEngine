@@ -65,12 +65,15 @@ Lo que existe hoy y lo que está roto. Se arregla en M0 (render) y M3 (física):
 - 🎓 Aprendes: el corazón de SPH (Müller 2003). Ver [`docs/01-sph-theory.md`](docs/01-sph-theory.md).
 
 ## 🪜 Milestone 4 — Que escale: neighbor search con grid
-- [ ] `NeighborSearch` (interfaz) + `UniformGrid` (spatial hashing).
-- [ ] **✅ Resultado: decenas de miles de partículas a 60 FPS.**
-- 🎓 Aprendes: spatial hashing, perfilado, optimización. 🎯 *Ideal como "good first issue".*
+- [x] `UniformGrid` por **spatial hashing** (Teschner et al. 2003: `hash(cx,cy) = (cx·73856093 ⊕ cy·19349663) mod tableSize`; celda = h, vecindad 3×3, `configure`/`build`/`queryNeighbors`). *(arregla el hash-based previo: faltaba el `mod tableSize` final → índice fuera de rango, y el módulo iba mal sobre la coordenada de celda. `floor` para celdas negativas, dedup de buckets para no doble-contar.)*
+- [x] Conectado al `SphSolver`: `step()` reconstruye el grid cada substep y corre densidad/fuerzas sobre vecinos (antes O(n²) todo-contra-todos).
+- [x] **Tests (CTest):** `neighbors` (grid == fuerza bruta dentro de h), `density` (densidad grid == fuerza bruta), `stability` (sim no explota tras 800 pasos).
+- [ ] **Perfilado/benchmark:** confirmar **decenas de miles de partículas a 60 FPS** (falta medir; el grid reconstruido por substep es O(n), pendiente una pasada de optimización — p. ej. `updateParticle` incremental).
+- 🎓 Aprendes: uniform grid, perfilado, optimización. 🎯 *Ideal como "good first issue".*
 
 ## 🪜 Milestone 5 — Pulido + interacción
 - [ ] Mouse para empujar / echar agua.
+- [x] Parámetros desde archivo (`sim.conf`, `key = value`, sin recompilar) → `SimConfig`/`loadConfig`. *(solver, escena, dt/substeps, dominio, gravedad, restitución, pointSize. Test `config`.)*
 - [ ] Parámetros en vivo (ImGui, opcional).
 - [ ] GIF para el README.
 - [ ] **✅ Resultado: demo compartible que atrae colaboradores.**

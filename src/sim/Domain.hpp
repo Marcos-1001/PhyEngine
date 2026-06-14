@@ -10,7 +10,7 @@ struct Domain2D
     Vec2 max;
     Scalar restitution; // Coeficiente de restitución para colisiones con los bordes
 
-    Domain2D(Vec2 min, Vec2 max, Scalar restitution = 0.8f) : min(min), max(max), restitution(restitution) {}
+    Domain2D(Vec2 min, Vec2 max, Scalar restitution = 0.2f) : min(min), max(max), restitution(restitution) {}
     Domain2D() : min(Vec2(0.0f, 0.0f)), max(Vec2(800.0f, 600.0f)), restitution(0.8f) {}
     void resolveCollision(Particle2D& particle) const
     {
